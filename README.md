@@ -1,0 +1,2 @@
+# ZCL_ALV_TABLE_CREATE_RTTI
+Variant of CL_ALV_TABLE_CREATE, to create a table via RTTI instead of GENERATE SUBROUTINE POOL
