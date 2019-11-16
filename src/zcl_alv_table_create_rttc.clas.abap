@@ -9,7 +9,7 @@
 "! <li>reuse_alv_table_create -&gt; ALV_TABLE_CREATE</li>
 "! </ul>
 "!
-CLASS zcl_alv_table_create_rtti DEFINITION
+CLASS zcl_alv_table_create_rttc DEFINITION
   PUBLIC
   CREATE PUBLIC .
 
@@ -88,7 +88,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_alv_table_create_rtti IMPLEMENTATION.
+CLASS zcl_alv_table_create_rttc IMPLEMENTATION.
 
 
   METHOD alv_table_create.
@@ -396,7 +396,7 @@ CLASS zcl_alv_table_create_rtti IMPLEMENTATION.
     ELSEIF r_oo_class IS BOUND.
       CALL METHOD r_oo_class->(r_oo_method) EXPORTING ip_table = ep_table.
     ELSE.
-      CALL METHOD zcl_alv_table_create_rtti=>(r_oo_method) EXPORTING ip_table = ep_table.
+      CALL METHOD zcl_alv_table_create_rttc=>(r_oo_method) EXPORTING ip_table = ep_table.
     ENDIF.
 
 
