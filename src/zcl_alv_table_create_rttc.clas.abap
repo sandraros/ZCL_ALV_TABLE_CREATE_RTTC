@@ -4,9 +4,9 @@
 "!
 "! <p>The other methods call ALV_TABLE_CREATE</p>
 "! <ul>
-"! <li>create_dynamic_table -&gt; LVC_TABLE_CREATE -&gt; ALV_TABLE_CREATE</li>
+"! <li>CREATE_DYNAMIC_TABLE -&gt; LVC_TABLE_CREATE -&gt; ALV_TABLE_CREATE</li>
 "! <li>LVC_TABLE_CREATE -&gt; ALV_TABLE_CREATE</li>
-"! <li>reuse_alv_table_create -&gt; ALV_TABLE_CREATE</li>
+"! <li>REUSE_ALV_TABLE_CREATE -&gt; ALV_TABLE_CREATE</li>
 "! </ul>
 "!
 CLASS zcl_alv_table_create_rttc DEFINITION
@@ -15,7 +15,7 @@ CLASS zcl_alv_table_create_rttc DEFINITION
 
   PUBLIC SECTION.
 
-  "! Wrapper of LVC_TABLE_CREATE (called with parameters 'ZCL_ALV_TABLE_CREATE_RTTI' and 'INTERNAL_RECEIVER')
+    "! Wrapper of LVC_TABLE_CREATE (called with parameters 'ZCL_ALV_TABLE_CREATE_RTTC' and 'INTERNAL_RECEIVER')
     CLASS-METHODS create_dynamic_table
       IMPORTING
         VALUE(i_style_table) TYPE char01 OPTIONAL
@@ -126,7 +126,7 @@ CLASS zcl_alv_table_create_rttc IMPLEMENTATION.
             it_fieldcat               = it_fieldcatalog
             i_style_table             = i_style_table
             i_length_in_byte          = i_length_in_byte
-            i_oo_class_name           = 'ZCL_ALV_TABLE_CREATE_RTTI'
+            i_oo_class_name           = 'ZCL_ALV_TABLE_CREATE_RTTC'
             i_oo_method               = l_oo_method
           EXCEPTIONS
             generate_subpool_dir_full = 1
