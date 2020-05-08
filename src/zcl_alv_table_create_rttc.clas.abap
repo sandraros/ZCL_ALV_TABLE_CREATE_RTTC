@@ -1,13 +1,22 @@
 "! <p class="shorttext synchronized" lang="en"></p>
+"! This class proposes alternate methods to avoid the short dump
+"! GENERATE_SUBPOOL_DIR_FULL which may occur in the following standard objects:<ul>
+"! <li>Method CREATE_DYNAMIC_TABLE of class CL_ALV_TABLE_CREATE</li>
+"! <li>Function module REUSE_ALV_TABLE_CREATE</li>
+"! <li>Function module LVC_TABLE_CREATE</li>
+"! <li>Function module ALV_TABLE_CREATE</li>
+"! </ul>
 "!
-"! <p>The central point is ALV_TABLE_CREATE - It calls FB_TABLE_CREATE_STRING</p>
+"! <p>The replacement methods have the same names as the replaced object, and the same parameters (as seen in 7.52).</p>
 "!
-"! <p>The other methods call ALV_TABLE_CREATE</p>
+"! <p>Here are the call stacks for each method:</p>
 "! <ul>
-"! <li>CREATE_DYNAMIC_TABLE -&gt; LVC_TABLE_CREATE -&gt; ALV_TABLE_CREATE</li>
+"! <li>CREATE_DYNAMIC_TABLE -&gt; LVC_TABLE_CREATE</li>
 "! <li>LVC_TABLE_CREATE -&gt; ALV_TABLE_CREATE</li>
 "! <li>REUSE_ALV_TABLE_CREATE -&gt; ALV_TABLE_CREATE</li>
+"! <li>ALV_TABLE_CREATE -&gt; FB_TABLE_CREATE_STRING</li>
 "! </ul>
+"! <p>The main logic to build the internal table is in the method FB_TABLE_CREATE_STRING.</p>
 "!
 CLASS zcl_alv_table_create_rttc DEFINITION
   PUBLIC
@@ -15,7 +24,11 @@ CLASS zcl_alv_table_create_rttc DEFINITION
 
   PUBLIC SECTION.
 
-    "! Wrapper of LVC_TABLE_CREATE (called with parameters 'ZCL_ALV_TABLE_CREATE_RTTC' and 'INTERNAL_RECEIVER')
+    "! Alternative to method CREATE_DYNAMIC_TABLE of class CL_ALV_TABLE_CREATE,
+    "! which avoids the short dump GENERATE_SUBPOOL_DIR_FULL by using RTTC.<br/>
+    "! It has exactly the same parameters (as of 7.52), even the exception
+    "! GENERATE_SUBPOOL_DIR_FULL but it's never raised.<br/>
+    "! (calls LVC_TABLE_CREATE with parameters 'ZCL_ALV_TABLE_CREATE_RTTC' and 'INTERNAL_RECEIVER')
     CLASS-METHODS create_dynamic_table
       IMPORTING
         VALUE(i_style_table) TYPE char01 OPTIONAL
@@ -26,7 +39,8 @@ CLASS zcl_alv_table_create_rttc DEFINITION
         !e_style_fname       TYPE lvc_fname
       EXCEPTIONS
         generate_subpool_dir_full .
-    "! Wrapper of ALV_TABLE_CREATE (note: before calling it, it first calls REUSE_ALV_TRANSFER_DATA)
+    "! Replacement of function module REUSE_ALV_TABLE_CREATE<br/>
+    "! (calls the function module REUSE_ALV_TRANSFER_DATA and then the method FB_TABLE_CREATE_STRING)
     CLASS-METHODS reuse_alv_table_create
       IMPORTING
         VALUE(it_fieldcat)        TYPE slis_t_fieldcat_alv
@@ -34,7 +48,8 @@ CLASS zcl_alv_table_create_rttc DEFINITION
         VALUE(i_formname)         TYPE char30
       EXCEPTIONS
         generate_subpool_dir_full .
-    "! Wrapper of FB_TABLE_CREATE_STRING
+    "! Replacement of function module ALV_TABLE_CREATE
+    "! (calls the method FB_TABLE_CREATE_STRING)
     CLASS-METHODS alv_table_create
       IMPORTING
         VALUE(it_fieldcat)        TYPE kkblo_t_fieldcat
@@ -48,7 +63,8 @@ CLASS zcl_alv_table_create_rttc DEFINITION
         !i_length_in_byte         TYPE boolean OPTIONAL
       EXCEPTIONS
         generate_subpool_dir_full .
-    "! Wrapper of ALV_TABLE_CREATE
+    "! Replacement of function module LVC_TABLE_CREATE<br/>
+    "! (calls the function module LVC_TRANSFER_TO_KKBLO and then the method ALV_TABLE_CREATE)
     CLASS-METHODS lvc_table_create
       IMPORTING
         VALUE(it_fieldcat)        TYPE lvc_t_fcat
@@ -61,7 +77,8 @@ CLASS zcl_alv_table_create_rttc DEFINITION
         !i_length_in_byte         TYPE boolean OPTIONAL
       EXCEPTIONS
         generate_subpool_dir_full .
-    "! creates the table via RTTI (note: the ALV catalog is also completed if needed)
+    "! Creates the internal table via RTTI (note: the ALV catalog is also completed if needed)<br/>
+    "! It's an adaptation of the standard subroutine FB_TABLE_CREATE_STRING of program SAPLSKBH.
     CLASS-METHODS fb_table_create_string
       IMPORTING
         !r_form           TYPE c
@@ -289,6 +306,7 @@ CLASS zcl_alv_table_create_rttc IMPLEMENTATION.
             OR ls_fieldcat-inttype EQ 's'.
             ls_fieldcat-inttype = 'I'.
 
+          ELSE.
             IF NOT ls_fieldcat-intlen IS INITIAL AND
                    ls_fieldcat-inttype NE 'g'.              "B20K8A0MOD
 
