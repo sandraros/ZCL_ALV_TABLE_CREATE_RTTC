@@ -349,6 +349,8 @@ CLASS zcl_alv_table_create_rttc IMPLEMENTATION.
               ls_comp-type = cl_abap_elemdescr=>get_string( ).
             ELSE.
               CASE ls_fieldcat-inttype.
+                WHEN 'C'.
+                  ls_comp-type = cl_abap_elemdescr=>get_c( ls_fieldcat-intlen + 0 ).
                 WHEN 'D'.
                   ls_comp-type = cl_abap_elemdescr=>get_d( ).
                 WHEN 'F'.
